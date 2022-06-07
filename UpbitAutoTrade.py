@@ -11,14 +11,14 @@ def get_plussell_target(ticker):
     df=pyupbit.get_ohlcv(ticker)
     yesterday=df.iloc[-2]
 
-    today_open=yesterday['close']*1.1
-    return today_open
+    target=yesterday['close']*1.14# 10%익절
+    return target
 
 def get_minussell_target(ticker):
     df=pyupbit.get_ohlcv(ticker)
     yesterday=df.iloc[-2]
-    today_open=yesterday['close']
-    return today_open
+    target=yesterday['close']
+    return target
 def get_target_price(ticker):# 목표가 설정
     df = pyupbit.get_ohlcv(ticker)
     yesterday = df.iloc[-2]
@@ -26,7 +26,7 @@ def get_target_price(ticker):# 목표가 설정
     today_open = yesterday['close']
     yesterday_high = yesterday['high']
     yesterday_low = yesterday['low']
-    target = today_open + (yesterday_high - yesterday_low) * 0.5
+    target = today_open + (yesterday_high - yesterday_low) * 0.6
     return target
 
 def buy_crypto_currency(ticker):#코인 매수
@@ -47,27 +47,33 @@ def get_yesterday_ma5(ticker):#5일 이동평균선
     return ma[-2]
 
 
-
+TF=False #매수 매도 기준
 now = datetime.datetime.now()
 mid = datetime.datetime(now.year, now.month, now.day) + datetime.timedelta(1)
-target_price = get_target_price("KRW-BTC")
+target_price = get_target_price("KRW-XRP")
 
 while True:
    now = datetime.datetime.now()
-   if mid < now < mid + datetime.timedelta(seconds=10) : 
-       print("정각입니다. 매도타임입니다.")
-       target_price = get_target_price("KRW-BTC")
+   print("Working...")
+   if mid < now < mid + datetime.timedelta(seconds=10) : #12시 정각되었을때 알고리즘
+       print("It's 12 o'clock right now. Let's start selling coin")
+       target_price = get_target_price("KRW-XRP")
        mid = datetime.datetime(now.year, now.month, now.day) + datetime.timedelta(1)
-       ma5=get_yesterday_ma5("KRW-BTC")
-       sell_crypto_currency("KRW-BTC")
+       ma5=get_yesterday_ma5("KRW-XRP")
+       sell_crypto_currency("KRW-XRP")
 
-   current_price = pyupbit.get_current_price("KRW-BTC")#목표가 계산 함수
-   plussell_target_price=get_plussell_target("KRW-BTC")
-   minussell_target_price=get_minussell_target("KRW-BTC")
-
-   if((current_price>plussell_target_price) or (current_price<minussell_target_price)): #시가10%이상이거나 시가이하로 떨어지면 매도
-    sell_crypto_currency("KRW-BTC")
+   current_price = pyupbit.get_current_price("KRW-XRP")#현재가 얻어오기
+   plussell_target_price=get_plussell_target("KRW-XRP")
+   minussell_target_price=get_minussell_target("KRW-XRP")
+   if(TF==True):
+       print("TF is true")
+       if((current_price>plussell_target_price) or (current_price<minussell_target_price)): #시가10%이상이거나 시가이하로 떨어지면 매도
+            sell_crypto_currency("KRW-XRP")
+            print("Sell Coin")
+            TF=False
    if(current_price>target_price):
-    buy_crypto_currency("KRW-BTC")
+       buy_crypto_currency("KRW-XRP")
+       print("Buy Coin")
+       TF=True
 
-   time.sleep(1)
+   time.sleep(3)
