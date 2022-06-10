@@ -14,7 +14,7 @@ def get_target_price(ticker):# 목표가 설정
     today_open = yesterday['close']
     yesterday_high = yesterday['high']
     yesterday_low = yesterday['low']
-    target = today_open + (yesterday_high - yesterday_low) * 0.6
+    target = today_open + (yesterday_high - yesterday_low) *0.6
     return target
 
 def get_balance(ticker): #잔고 조회
@@ -43,13 +43,13 @@ def sell_crypto_currency(ticker):#코인 매도
 now = datetime.datetime.now()
 mid = datetime.datetime(now.year, now.month, now.day) + datetime.timedelta(1)
 target_price = get_target_price("KRW-XRP")
-
-
-
 while True:
    now = datetime.datetime.now()
+   print(mid)
    print("Working...")
    XRPbalance=get_balance("XRP")
+   print(target_price)
+   print(XRPbalance)
    TF=False
    if(XRPbalance>1):
        TF=True
@@ -61,7 +61,7 @@ while True:
        print("It's 12 o'clock right now. Let's start selling coin")
        target_price = get_target_price("KRW-XRP")
        mid = datetime.datetime(now.year, now.month, now.day) + datetime.timedelta(1)
-       if(XRPbalance>0):
+       if(XRPbalance>1):
             upbit.sell_market_order("KRW-XRP",XRPbalance*0.9995)
             print("Sell Coin")
             TF=False
@@ -81,10 +81,9 @@ while True:
 
    if(current_price>target_price):  #매수
        KRWbalance=get_balance("KRW")
-       if (KRWbalance>target_price):
+       if (KRWbalance>5000):
            upbit.buy_market_order("KRW-XRP",KRWbalance*0.9995)
            print("Buy Coin")
            TF=True
-           break
        #buy_crypto_currency("KRW-XRP")
    time.sleep(3)
