@@ -43,6 +43,7 @@ def sell_crypto_currency(ticker):#코인 매도
 now = datetime.datetime.now()
 mid = datetime.datetime(now.year, now.month, now.day) + datetime.timedelta(1)
 target_price = get_target_price("KRW-XRP")
+today_trade=False
 while True:
    now = datetime.datetime.now()
    print(mid)
@@ -57,20 +58,21 @@ while True:
        TF=False
     
 
-   if ((mid < now < mid + datetime.timedelta(seconds=10)) and TF==True) : #12시 정각되었을때 알고리즘
+   if (mid < now < mid + datetime.timedelta(seconds=10)) : #12시 정각되었을때 알고리즘
        print("It's 12 o'clock right now. Let's start selling coin")
        target_price = get_target_price("KRW-XRP")
        mid = datetime.datetime(now.year, now.month, now.day) + datetime.timedelta(1)
-       if(XRPbalance>1):
+       if(TF==True):#코인을 가지고 있을때
             upbit.sell_market_order("KRW-XRP",XRPbalance*0.9995)
             print("Sell Coin")
             TF=False
+       today_trade=False
        #sell_crypto_currency("KRW-XRP")
        #TF=False
 
    current_price = pyupbit.get_current_price("KRW-XRP")#현재가 얻어오기
 
-   if(TF==True):
+   if(TF==True):   #매도
        print("TF is true")
        if((current_price>(target_price*1.1)) or (current_price<(target_price*0.97))): #수익 10% 익절,손익 -3% 손절
            if(XRPbalance>1):
@@ -78,8 +80,9 @@ while True:
                print("Sell Coin")
                print(now)
                TF=False
+               today_trade=True
 
-   if(current_price>target_price):  #매수
+   if((current_price>target_price) and (today_trade==False)):  #매수
        KRWbalance=get_balance("KRW")
        if (KRWbalance>5000):
            upbit.buy_market_order("KRW-XRP",KRWbalance*0.9995)
